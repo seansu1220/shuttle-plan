@@ -1,0 +1,9 @@
+{
+  "name": "shuttle-plan",
+  "private": true,
+  "type": "module",
+  "description": "偏遠救護接駁點建議系統（純前端，無需安裝套件）",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "偏遠救護接駁點",
+  "short_name": "救護接駁",
+  "display": "standalone",
+  "background_color": "#f4f5f7",
+  "theme_color": "#b42318",
+  "lang": "zh-Hant-TW",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

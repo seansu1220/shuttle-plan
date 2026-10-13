@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#b42318">
+  <title>接駁管理工具</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-title">接駁管理工具</div>
+    <div class="topbar-sub"><a href="index.html" style="color:inherit">回主頁</a></div>
+  </header>
+
+  <main class="page">
+    <div id="alerts"></div>
+
+    <section class="card">
+      <h2>產生 NFC／QR Code 網址</h2>
+      <div class="tool-grid">
+        <label>網站網址（部署到 GitHub Pages 後自動帶入，通常不用改）
+          <input id="baseUrl" type="url">
+        </label>
+        <label>出勤分隊（A）
+          <select id="aSelect"></select>
+        </label>
+        <label>預先指定支援分隊（B，選填；指揮中心傳連結時使用）
+          <select id="bSelect"></select>
+        </label>
+      </div>
+      <p class="url-box" id="urlBox"></p>
+      <div class="qr-box" id="qrBox"></div>
+      <div class="button-row">
+        <button type="button" class="btn" id="copyUrlBtn">複製網址</button>
+        <button type="button" class="btn" id="downloadQrBtn">下載 QR Code 圖檔</button>
+        <button type="button" class="btn btn-primary" id="writeNfcBtn" hidden>直接寫入 NFC 標籤</button>
+      </div>
+      <p class="hint" id="nfcStatus"></p>
+    </section>
+
+    <section class="card">
+      <h2>寫入 NFC 標籤的方法</h2>
+      <ol class="steps">
+        <li>購買空白 NFC 標籤（建議 NTAG215 貼紙或卡片，防水款更適合貼在救護車上）。</li>
+        <li><strong>Android 手機</strong>：用 Chrome 開啟本頁，選好分隊後按「直接寫入 NFC 標籤」，再把標籤貼近手機背面。</li>
+        <li><strong>iPhone</strong>：安裝免費 App「NFC Tools」→「寫」→「新增記錄」→「URL／URI」→ 貼上上面的網址 →「寫」→ 把標籤靠近手機頂端。</li>
+        <li>寫好後用另一支手機逼一下測試，確認能打開正確分隊的頁面。</li>
+        <li>建議在標籤旁邊貼上同一網址的 QR Code，作為沒開 NFC 時的備援。</li>
+        <li>寫好的標籤可以用 NFC Tools 設定「鎖定」，防止被別人覆寫（鎖定後無法再改，請確認網址正確後再鎖）。</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>全部分隊 QR Code（列印用）</h2>
+      <p class="hint">按下後會列出每個分隊的 QR Code，可以直接用瀏覽器列印。</p>
+      <div class="button-row no-print">
+        <button type="button" class="btn" id="printAllBtn">列出並列印</button>
+      </div>
+      <div id="printArea"></div>
+    </section>
+
+    <section class="card">
+      <h2>取得座標（新增地點用）</h2>
+      <p class="hint">在地圖上點一下要新增的位置，再把座標貼到試算表的「座標」欄。也可以在 Google 地圖上按右鍵，第一行就是座標。</p>
+      <div id="pickMap" class="map"></div>
+      <p class="url-box" id="pickedCoord">尚未點選</p>
+      <div class="button-row"><button type="button" class="btn" id="copyCoordBtn">複製座標</button></div>
+    </section>
+
+    <section class="card">
+      <h2>目前資料檢查</h2>
+      <div id="dataCheck">讀取中…</div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script type="module" src="js/tools.js"></script>
+</body>
+</html>
