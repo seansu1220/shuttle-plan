@@ -8,6 +8,7 @@ import {
 /** @typedef {import("./types.js").PlanResult} PlanResult */
 /** @typedef {import("./types.js").RankedCandidate} RankedCandidate */
 /** @typedef {import("./types.js").Station} Station */
+/** @typedef {import("./types.js").LatLng} LatLng */
 /** @typedef {import("./types.js").Hospital} Hospital */
 /** @typedef {import("./types.js").PlannerSettings} PlannerSettings */
 
@@ -34,7 +35,7 @@ function bestCardHtml(best, computedAt, settings) {
       <div class="best-meet">約 <strong>${formatClockAfter(computedAt, best.meetSec)}</strong> 碰頭（${formatMinutes(best.meetSec)}後）</div>
       <div class="best-wait">${escapeHtml(describeWaiting(best))}</div>
       <dl class="legs">
-        <div><dt>A 現場 → 接駁點</dt><dd>${formatMinutes(best.aArriveSec)}<small>${formatKm(legs.sceneToPointM)}</small></dd></div>
+        <div><dt>A 目前位置 → 接駁點</dt><dd>${formatMinutes(best.aArriveSec)}<small>${formatKm(legs.sceneToPointM)}</small></dd></div>
         <div><dt>B 分隊 → 接駁點</dt><dd>${formatMinutes(best.bArriveSec)}<small>含準備 ${settings.bPrepMinutes} 分・${formatKm(legs.bToPointM)}</small></dd></div>
         <div><dt>接駁點 → 醫院</dt><dd>${formatMinutes(best.pointToHospitalSec)}<small>${formatKm(legs.pointToHospitalM)}</small></dd></div>
         <div><dt>預估到院</dt><dd>${formatClockAfter(computedAt, best.totalSec)}<small>共 ${formatMinutes(best.totalSec)}</small></dd></div>
@@ -77,9 +78,9 @@ function sourceNoteHtml(plan) {
 
 /**
  * @param {HTMLElement} container
- * @param {{plan: PlanResult, aStation: Station, bStation: Station, hospital: Hospital, settings: PlannerSettings}} info
+ * @param {{plan: PlanResult, scene: LatLng, bStation: Station, hospital: Hospital, settings: PlannerSettings}} info
  */
-export function renderResult(container, { plan, aStation, bStation, hospital, settings }) {
+export function renderResult(container, { plan, scene, bStation, hospital, settings }) {
   if (plan.ranked.length === 0) {
     renderError(container, "所有接駁點都無法算出行車路線，請確認現場位置是否正確。");
     return;
@@ -93,7 +94,7 @@ export function renderResult(container, { plan, aStation, bStation, hospital, se
 
   container.querySelectorAll("[data-share]").forEach((button) => {
     button.addEventListener("click", () => handleShare(button, plan.ranked[Number(button.dataset.share)], {
-      aName: aStation.name, bName: bStation.name, hospitalName: hospital.name, computedAt: plan.computedAt,
+      scene, bName: bStation.name, hospitalName: hospital.name, computedAt: plan.computedAt,
     }));
   });
 }

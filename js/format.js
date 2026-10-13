@@ -35,13 +35,12 @@ export function placeUrl(p) {
 }
 
 /**
- * 產生寫入 NFC／QR Code 的啟動網址。
- * @param {string} baseUrl 網站根目錄網址 @param {string} aCode @param {string} bCode 可為空字串
+ * 產生寫入 NFC／QR Code 的啟動網址；bCode 不為空時預先指定支援分隊（指揮中心傳連結用）。
+ * @param {string} baseUrl 網站根目錄網址 @param {string} bCode
  */
-export function buildLaunchUrl(baseUrl, aCode, bCode) {
+export function buildLaunchUrl(baseUrl, bCode) {
   const url = new URL(baseUrl);
   url.search = "";
-  if (aCode) url.searchParams.set("a", aCode);
   if (bCode) url.searchParams.set("b", bCode);
   return url.href;
 }
@@ -64,17 +63,18 @@ export function describeWaiting(candidate) {
 
 /**
  * 給 B 分隊（或指揮中心）的 LINE 訊息。
- * @param {{aName: string, bName: string, hospitalName: string, candidate: RankedCandidate, computedAt: Date}} info
+ * @param {{scene: LatLng, bName: string, hospitalName: string, candidate: RankedCandidate, computedAt: Date}} info
  */
-export function buildShareText({ aName, bName, hospitalName, candidate, computedAt }) {
+export function buildShareText({ scene, bName, hospitalName, candidate, computedAt }) {
   const { point } = candidate;
   return [
     "【偏遠救護接駁】",
-    `出勤：${aName}分隊　支援：${bName}分隊`,
+    `支援分隊：${bName}分隊`,
     `接駁點：${point.name}${point.note ? `（${point.note}）` : ""}`,
     `預估碰頭：約 ${formatClockAfter(computedAt, candidate.meetSec)}（${formatMinutes(candidate.meetSec)}後）`,
     `B 分隊到達需：${formatMinutes(candidate.bArriveSec)}（含準備）`,
     `送醫：${hospitalName}`,
-    `導航：${navigationUrl(point)}`,
+    `接駁點導航：${navigationUrl(point)}`,
+    `案發現場位置：${placeUrl(scene)}`,
   ].join("\n");
 }

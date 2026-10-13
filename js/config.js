@@ -17,7 +17,7 @@ export const APP_CONFIG = Object.freeze({
   sampleDataDir: "data/sample",
 
   routing: Object.freeze({
-    // Google Routes API 金鑰；留空則跳過 Google，直接使用免費開放圖資。
+    // Google 金鑰（需啟用 Routes API 與 Geocoding API）；留空則跳過 Google，直接使用免費開放圖資。
     // 金鑰務必在 Google Cloud 設定「HTTP 參照網址限制」與每日用量上限（見 README）。
     googleApiKey: "",
     // OpenRouteService 金鑰（選填，免費申請）；留空則跳過。
@@ -31,6 +31,11 @@ export const APP_CONFIG = Object.freeze({
     bPrepMinutes: 2,
     tieThresholdMinutes: 3,
     openDataTimeFactor: 1.0,
+  }),
+
+  geocoding: Object.freeze({
+    // 地址查詢優先範圍（經度1,緯度1,經度2,緯度2）：桃園及鄰近山區，範圍外仍可查到，只是排序較後。
+    viewbox: "120.95,25.15,121.65,24.50",
   }),
 
   map: Object.freeze({

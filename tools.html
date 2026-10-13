@@ -20,14 +20,12 @@
 
     <section class="card">
       <h2>產生 NFC／QR Code 網址</h2>
+      <p class="hint">所有救護車的 NFC 標籤都寫同一個網址即可。</p>
       <div class="tool-grid">
         <label>網站網址（部署到 GitHub Pages 後自動帶入，通常不用改）
           <input id="baseUrl" type="url">
         </label>
-        <label>出勤分隊（A）
-          <select id="aSelect"></select>
-        </label>
-        <label>預先指定支援分隊（B，選填；指揮中心傳連結時使用）
+        <label>預先指定支援分隊（B，選填；寫 NFC 請維持「不指定」，指揮中心傳連結時才選）
           <select id="bSelect"></select>
         </label>
       </div>
@@ -45,21 +43,27 @@
       <h2>寫入 NFC 標籤的方法</h2>
       <ol class="steps">
         <li>購買空白 NFC 標籤（建議 NTAG215 貼紙或卡片，防水款更適合貼在救護車上）。</li>
-        <li><strong>Android 手機</strong>：用 Chrome 開啟本頁，選好分隊後按「直接寫入 NFC 標籤」，再把標籤貼近手機背面。</li>
+        <li><strong>Android 手機</strong>：用 Chrome 開啟本頁，按「直接寫入 NFC 標籤」，再把標籤貼近手機背面。</li>
         <li><strong>iPhone</strong>：安裝免費 App「NFC Tools」→「寫」→「新增記錄」→「URL／URI」→ 貼上上面的網址 →「寫」→ 把標籤靠近手機頂端。</li>
-        <li>寫好後用另一支手機逼一下測試，確認能打開正確分隊的頁面。</li>
+        <li>寫好後用另一支手機逼一下測試，確認能打開接駁頁面。</li>
         <li>建議在標籤旁邊貼上同一網址的 QR Code，作為沒開 NFC 時的備援。</li>
         <li>寫好的標籤可以用 NFC Tools 設定「鎖定」，防止被別人覆寫（鎖定後無法再改，請確認網址正確後再鎖）。</li>
       </ol>
     </section>
 
     <section class="card">
-      <h2>全部分隊 QR Code（列印用）</h2>
-      <p class="hint">按下後會列出每個分隊的 QR Code，可以直接用瀏覽器列印。</p>
+      <h2>列印 QR Code 貼紙</h2>
+      <p class="hint">一次列出 6 張通用 QR Code，可以剪下貼在救護車 NFC 標籤旁邊。</p>
       <div class="button-row no-print">
         <button type="button" class="btn" id="printAllBtn">列出並列印</button>
       </div>
       <div id="printArea"></div>
+    </section>
+
+    <section class="card">
+      <h2>指揮中心用：預先指定支援分隊的連結</h2>
+      <p class="hint">指揮中心決定好支援分隊後，可以把對應連結用 LINE 傳給 A 分隊，點開就已經選好 B 分隊。</p>
+      <div id="dispatchLinks">讀取中…</div>
     </section>
 
     <section class="card">

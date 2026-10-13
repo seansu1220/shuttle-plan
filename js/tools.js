@@ -1,4 +1,4 @@
-// 管理工具頁：產生各分隊啟動網址、QR Code、寫入 NFC、座標選取與資料檢查。
+// 管理工具頁：產生啟動網址、QR Code、寫入 NFC、指揮中心連結、座標選取與資料檢查。
 
 import { APP_CONFIG } from "./config.js";
 import { loadDataset } from "./dataSource.js";
@@ -12,9 +12,10 @@ const QR_SIZE = 220;
 
 /** 預設網站網址＝本頁所在資料夾 */
 const defaultBaseUrl = () => new URL("./", location.href).href;
+const baseUrl = () => $("baseUrl").value.trim() || defaultBaseUrl();
 
 function currentUrl() {
-  return buildLaunchUrl($("baseUrl").value.trim() || defaultBaseUrl(), $("aSelect").value, $("bSelect").value);
+  return buildLaunchUrl(baseUrl(), $("bSelect").value);
 }
 
 /** @param {HTMLElement} element @param {string} text */
@@ -36,7 +37,6 @@ function refreshUrl() {
 /** @param {Dataset} dataset */
 function fillSelectors(dataset) {
   const options = dataset.stations.map((s) => `<option value="${escapeHtml(s.code)}">${escapeHtml(s.name)}分隊（${escapeHtml(s.code)}）</option>`).join("");
-  $("aSelect").innerHTML = options;
   $("bSelect").innerHTML = `<option value="">不指定（由現場同仁選擇）</option>${options}`;
 }
 
@@ -45,7 +45,8 @@ function downloadQr() {
   if (!canvas) return;
   const link = document.createElement("a");
   link.href = canvas.toDataURL("image/png");
-  link.download = `接駁_${$("aSelect").selectedOptions[0]?.textContent ?? "QR"}.png`;
+  const bName = $("bSelect").value ? `_${$("bSelect").selectedOptions[0].textContent}` : "";
+  link.download = `救護接駁QR${bName}.png`;
   link.click();
 }
 
@@ -62,18 +63,32 @@ async function writeNfc() {
   }
 }
 
-/** @param {Dataset} dataset */
-function printAll(dataset) {
-  const base = $("baseUrl").value.trim() || defaultBaseUrl();
-  $("printArea").innerHTML = `<div class="print-grid">${dataset.stations.map((s) => `
+const PRINT_COPIES = 6;
+
+function printAll() {
+  const url = buildLaunchUrl(baseUrl(), "");
+  const item = `
     <div class="print-item">
-      <div class="print-name">${escapeHtml(s.name)}分隊　偏遠救護接駁</div>
-      <div class="qr-box" data-url="${escapeHtml(buildLaunchUrl(base, s.code, ""))}"></div>
-      <div class="url-box">${escapeHtml(buildLaunchUrl(base, s.code, ""))}</div>
-    </div>`).join("")}</div>`;
+      <div class="print-name">偏遠救護接駁　逼一下或掃描</div>
+      <div class="qr-box" data-url="${escapeHtml(url)}"></div>
+      <div class="url-box">${escapeHtml(url)}</div>
+    </div>`;
+  $("printArea").innerHTML = `<div class="print-grid">${item.repeat(PRINT_COPIES)}</div>`;
   $("printArea").querySelectorAll("[data-url]").forEach((el) => drawQr(el, el.dataset.url, 180));
   document.body.classList.add("print-all");
   setTimeout(() => { window.print(); document.body.classList.remove("print-all"); }, 300);
+}
+
+/** @param {Dataset} dataset */
+function renderDispatchLinks(dataset) {
+  const rows = dataset.stations.map((s) => {
+    const url = buildLaunchUrl(baseUrl(), s.code);
+    return `<tr><td>${escapeHtml(s.name)}分隊支援</td><td class="url-cell">${escapeHtml(url)}</td><td><button type="button" class="btn btn-small" data-copy="${escapeHtml(url)}">複製</button></td></tr>`;
+  }).join("");
+  $("dispatchLinks").innerHTML = `<div class="table-wrap"><table class="data">${rows}</table></div>`;
+  $("dispatchLinks").querySelectorAll("[data-copy]").forEach((button) => button.addEventListener("click", () => {
+    copyText(button.dataset.copy).then(() => { button.textContent = "已複製"; }).catch((e) => alert(e.message));
+  }));
 }
 
 function setupPickMap() {
@@ -100,12 +115,11 @@ function tableHtml(rows, extraHeader = "", extraCell = () => "") {
 function renderDataCheck(dataset) {
   const { settings, warnings } = dataset;
   const source = dataset.source === "sheet" ? "Google 試算表" : "內建示範資料（js/config.js 尚未設定試算表 ID）";
-  const hospitalName = (code) => dataset.hospitals.find((h) => h.code === code)?.name ?? code;
   $("dataCheck").innerHTML = `
     <p>資料來源：${source}</p>
     ${warnings.length ? `<div class="alert alert-warn">${warnings.map(escapeHtml).join("<br>")}</div>` : `<p>✅ 沒有發現資料問題</p>`}
     <p>設定：B 分隊準備 ${settings.bPrepMinutes} 分鐘；碰頭相近門檻 ${settings.tieThresholdMinutes} 分鐘；開放圖資時間倍率 ${settings.openDataTimeFactor}</p>
-    <h3>分隊</h3>${tableHtml(dataset.stations, "轄區醫院", (s) => s.hospitalCodes.map(hospitalName).join("、") || "（全部醫院）")}
+    <h3>分隊</h3>${tableHtml(dataset.stations)}
     <h3>接駁點</h3>${tableHtml(dataset.transferPoints)}
     <h3>醫院</h3>${tableHtml(dataset.hospitals)}`;
 }
@@ -127,10 +141,12 @@ async function init() {
   fillSelectors(dataset);
   renderDataCheck(dataset);
   refreshUrl();
-  ["baseUrl", "aSelect", "bSelect"].forEach((id) => $(id).addEventListener("input", refreshUrl));
+  ["baseUrl", "bSelect"].forEach((id) => $(id).addEventListener("input", refreshUrl));
   $("copyUrlBtn").addEventListener("click", () => copyText(currentUrl()).then(() => { $("copyUrlBtn").textContent = "已複製"; }).catch((e) => alert(e.message)));
   $("downloadQrBtn").addEventListener("click", downloadQr);
-  $("printAllBtn").addEventListener("click", () => printAll(dataset));
+  $("printAllBtn").addEventListener("click", printAll);
+  renderDispatchLinks(dataset);
+  $("baseUrl").addEventListener("change", () => renderDispatchLinks(dataset));
   if ("NDEFReader" in window) {
     $("writeNfcBtn").hidden = false;
     $("writeNfcBtn").addEventListener("click", writeNfc);

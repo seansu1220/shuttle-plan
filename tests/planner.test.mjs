@@ -40,6 +40,14 @@ test("碰頭時間在門檻內時，改以送醫總時間較短者優先", () =>
   assert.equal(ranked[0].point.code, "MEET12_TOTAL22");
 });
 
+test("門檻內送醫總時間差不到 1 分鐘時，碰頭較快者優先", () => {
+  const { ranked } = rankCandidates([
+    { ...legs("MEET11", 11, 1, 25), pointToHospitalSec: 25 * 60 - 20 }, // 碰頭 11，總 35:40
+    legs("MEET9", 9, 1, 27), // 碰頭 9，總 36:00
+  ], settings);
+  assert.equal(ranked[0].point.code, "MEET9");
+});
+
 test("門檻外的備案依碰頭時間排序", () => {
   const { ranked } = rankCandidates([
     legs("M30", 30, 1, 1),

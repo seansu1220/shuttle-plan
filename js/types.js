@@ -12,7 +12,6 @@
  * @property {string} name
  * @property {number} lat
  * @property {number} lng
- * @property {string[]} hospitalCodes 轄區可選醫院代碼
  * @property {string} note
  */
 
@@ -32,6 +31,15 @@
  * @property {number} lat
  * @property {number} lng
  * @property {string} note
+ */
+
+/**
+ * @typedef {Object} GeocodeCandidate 地址查詢結果
+ * @property {string} label 顯示名稱
+ * @property {number} lat
+ * @property {number} lng
+ * @property {boolean} precise false 表示只找到路段／村里等概略位置，需在地圖確認
+ * @property {string} source 查詢來源
  */
 
 /**

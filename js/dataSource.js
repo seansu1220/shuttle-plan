@@ -111,20 +111,6 @@ export function normalizeSettings(records, warnings) {
   return settings;
 }
 
-/**
- * @param {ReturnType<typeof normalizePlaces>} stationPlaces
- * @param {Set<string>} hospitalCodes
- * @param {string[]} warnings
- */
-function attachStationHospitals(stationPlaces, hospitalCodes, warnings) {
-  return stationPlaces.map(({ raw, ...station }) => {
-    const codes = (raw["轄區醫院代碼"] ?? "").split(/[,，、\s]+/).filter(Boolean);
-    codes.filter((code) => !hospitalCodes.has(code))
-      .forEach((code) => warnings.push(`「分隊」${station.name}：轄區醫院代碼 ${code} 在「醫院」分頁找不到`));
-    return { ...station, hospitalCodes: codes.filter((code) => hospitalCodes.has(code)) };
-  });
-}
-
 const stripRaw = ({ raw, ...place }) => place;
 
 /** @returns {Promise<Dataset>} */
@@ -137,8 +123,7 @@ export async function loadDataset() {
 
   const hospitals = normalizePlaces(records.hospitals, tabs.hospitals, warnings).map(stripRaw);
   const transferPoints = normalizePlaces(records.transferPoints, tabs.transferPoints, warnings).map(stripRaw);
-  const stationPlaces = normalizePlaces(records.stations, tabs.stations, warnings);
-  const stations = attachStationHospitals(stationPlaces, new Set(hospitals.map((h) => h.code)), warnings);
+  const stations = normalizePlaces(records.stations, tabs.stations, warnings).map(stripRaw);
   const settings = normalizeSettings(records.settings, warnings);
 
   return {

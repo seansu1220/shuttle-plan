@@ -40,6 +40,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
   margin: 0;
   background: var(--bg);
@@ -73,8 +74,6 @@ body {
   background: var(--brand); color: var(--brand-ink); font-size: 14px;
 }
 .muted { color: var(--muted); }
-.a-section summary { font-weight: 700; cursor: pointer; min-height: 32px; }
-.a-section[open] summary { margin-bottom: 10px; }
 .hint { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -91,6 +90,21 @@ body {
 .button-row .btn { flex: 1 1 140px; }
 
 .geo-status { margin: 0 0 8px; }
+.address-form { display: flex; gap: 8px; margin-bottom: 8px; }
+.address-form input {
+  flex: 1; min-width: 0; min-height: 44px; font: inherit; padding: 6px 12px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+}
+.address-form .btn { flex: none; }
+.address-results { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 6px; }
+.address-results:empty { display: none; }
+.address-option {
+  width: 100%; min-height: 44px; text-align: left; font: inherit; padding: 8px 12px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+}
+.badge-approx { flex: none; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--warn-bg); color: var(--warn-ink); }
+.chip-more { color: var(--muted); }
 .geo-status.warn { color: var(--warn-ink); background: var(--warn-bg); padding: 6px 10px; border-radius: 8px; }
 
 .alert { border-radius: var(--radius); padding: 12px 14px; font-size: 15px; }
@@ -152,6 +166,7 @@ body {
 .url-box { word-break: break-all; font-family: ui-monospace, Consolas, monospace; font-size: 14px; background: var(--bg); padding: 10px; border-radius: 8px; }
 .qr-box { display: grid; place-items: center; padding: 12px; background: #fff; border-radius: 10px; width: fit-content; margin: 8px auto; }
 .table-wrap { overflow-x: auto; }
+table.data td.url-cell { white-space: normal; word-break: break-all; font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
 table.data { border-collapse: collapse; width: 100%; font-size: 14px; }
 table.data th, table.data td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; white-space: nowrap; }
 ol.steps { padding-left: 20px; margin: 0; }

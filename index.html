@@ -14,16 +14,11 @@
 <body>
   <header class="topbar">
     <div class="topbar-title">偏遠救護接駁</div>
-    <div class="topbar-sub" id="aBadge">讀取資料中…</div>
+    <div class="topbar-sub" id="topbarSub">讀取資料中…</div>
   </header>
 
   <main class="page">
     <div id="alerts"></div>
-
-    <details class="card a-section" id="aSection">
-      <summary id="aSummary">出勤分隊（A）</summary>
-      <div class="chips" id="aChips"></div>
-    </details>
 
     <section class="card">
       <h2><span class="step">1</span>支援分隊（B）</h2>
@@ -31,31 +26,37 @@
     </section>
 
     <section class="card">
-      <h2><span class="step">2</span>送往醫院</h2>
-      <div class="chips" id="hChips"></div>
-    </section>
-
-    <section class="card">
-      <h2><span class="step">3</span>案發現場位置</h2>
+      <h2><span class="step">2</span>目前所在位置（案發現場）</h2>
       <p class="geo-status" id="geoStatus">準備定位…</p>
+      <form class="address-form" id="addressForm" autocomplete="off">
+        <input id="addressInput" type="search" enterkeyhint="search" aria-label="地址、地標或座標"
+               placeholder="或輸入地址、地標、座標">
+        <button type="submit" class="btn" id="addressBtn">搜尋</button>
+      </form>
+      <ul class="address-results" id="addressResults"></ul>
       <div class="button-row">
         <button type="button" class="btn" id="relocateBtn">重新定位</button>
         <button type="button" class="btn" id="pickBtn">在地圖上點選</button>
       </div>
     </section>
 
+    <section class="card">
+      <h2><span class="step">3</span>送往醫院</h2>
+      <div class="chips" id="hChips"></div>
+    </section>
+
     <section id="result" aria-live="polite"></section>
 
     <section class="card map-card">
       <div id="map" class="map"></div>
-      <p class="hint">紅色 A 是案發現場，可以拖曳修正。綠色 1 是建議接駁點，橘色 2、3 是備案。</p>
+      <p class="hint">紅色 A 是目前所在位置，可以拖曳修正。綠色 1 是建議接駁點，橘色 2、3 是備案，藍色 B 是支援分隊。</p>
     </section>
   </main>
 
   <footer class="footer">
     <p>本系統僅供決策輔助，實際接駁點以指揮中心或帶隊官指示為準。</p>
     <p id="dataSource"></p>
-    <p><a href="tools.html">管理工具（產生 NFC／QR Code 網址）</a></p>
+    <p><a href="tools.html">管理工具（NFC／QR Code、資料檢查）</a></p>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>

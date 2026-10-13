@@ -31,6 +31,9 @@ export function buildCandidateLegs(points, meetMatrix, hospitalMatrix) {
   }));
 }
 
+/** @param {RankedCandidate} candidate */
+const totalMinutes = (candidate) => Math.round(candidate.totalSec / 60);
+
 /** @param {CandidateLegs} legs */
 const isReachable = (legs) =>
   [legs.sceneToPointSec, legs.bToPointSec, legs.pointToHospitalSec].every((v) => typeof v === "number");
@@ -75,7 +78,8 @@ export function rankCandidates(legsList, settings) {
   const ranked = [...scored].sort((x, y) => {
     const groupDiff = Number(inTieGroup(y)) - Number(inTieGroup(x));
     if (groupDiff !== 0) return groupDiff;
-    if (inTieGroup(x)) return x.totalSec - y.totalSec || x.meetSec - y.meetSec;
+    // 送醫總時間以分鐘比較，差不到 1 分鐘視為相同，回到碰頭較快者優先
+    if (inTieGroup(x)) return totalMinutes(x) - totalMinutes(y) || x.meetSec - y.meetSec;
     return x.meetSec - y.meetSec || x.totalSec - y.totalSec;
   });
   ranked[0] = { ...ranked[0], recommended: true };

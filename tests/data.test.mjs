@@ -57,19 +57,22 @@ test("示範資料全部通過檢查", () => {
   }
 });
 
-test("啟動網址只帶 a、b 參數", () => {
-  assert.equal(buildLaunchUrl("https://x.github.io/shuttle/?old=1", "FX", ""), "https://x.github.io/shuttle/?a=FX");
-  assert.equal(buildLaunchUrl("https://x.github.io/shuttle/", "FX", "BL"), "https://x.github.io/shuttle/?a=FX&b=BL");
+test("啟動網址：通用網址不帶參數，指揮中心連結帶 b", () => {
+  assert.equal(buildLaunchUrl("https://x.github.io/shuttle/?old=1", ""), "https://x.github.io/shuttle/");
+  assert.equal(buildLaunchUrl("https://x.github.io/shuttle/", "BL"), "https://x.github.io/shuttle/?b=BL");
 });
 
-test("分享文字包含接駁點、導航連結", () => {
+test("分享文字包含支援分隊、接駁點、導航與現場位置連結", () => {
   const text = buildShareText({
-    aName: "巴陵", bName: "復興", hospitalName: "國軍桃園總醫院", computedAt: new Date(2026, 0, 1, 10, 0),
+    scene: { lat: 24.68, lng: 121.39 }, bName: "復興", hospitalName: "國軍桃園總醫院", computedAt: new Date(2026, 0, 1, 10, 0),
     candidate: { point: { name: "羅浮橋", note: "", lat: 24.8, lng: 121.36 }, meetSec: 900, bArriveSec: 600 },
   });
+  assert.match(text, /支援分隊：復興分隊/);
   assert.match(text, /接駁點：羅浮橋/);
   assert.match(text, /10:15/);
   assert.match(text, /destination=24.8,121.36/);
+  assert.match(text, /query=24.68,121.39/);
+  assert.equal(text.split("\n").length, 8);
 });
 
 test("時間格式化", () => {
